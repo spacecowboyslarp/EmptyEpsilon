@@ -41,7 +41,8 @@ ScienceScreen::ScienceScreen(GuiContainer* owner, ECrewPosition crew_position)
     radar_view->setSize(GuiElement::GuiSizeMax, GuiElement::GuiSizeMax);
 
     // Draw the science radar.
-    science_radar = new GuiRadarView(radar_view, "SCIENCE_RADAR", gameGlobalInfo->long_range_radar_range, &targets);
+//    science_radar = new GuiRadarView(radar_view, "SCIENCE_RADAR", gameGlobalInfo->long_range_radar_range, &targets);
+    science_radar = new GuiRadarView(radar_view, "SCIENCE_RADAR", 100000.0, &targets);
     science_radar->setPosition(-270, 0, ACenterRight)->setSize(GuiElement::GuiSizeMax, GuiElement::GuiSizeMax);
     science_radar->setRangeIndicatorStepSize(5000.0)->longRange()->enableWaypoints()->enableCallsigns()->enableHeadingIndicators()->setStyle(GuiRadarView::Circular)->setFogOfWarStyle(GuiRadarView::NebulaFogOfWar);
     science_radar->setCallbacks(
@@ -52,8 +53,9 @@ ScienceScreen::ScienceScreen(GuiContainer* owner, ECrewPosition crew_position)
             targets.setToClosestTo(position, 1000, TargetsContainer::Selectable);
         }, nullptr, nullptr
     );
-    new RawScannerDataRadarOverlay(science_radar, "", gameGlobalInfo->long_range_radar_range);
-
+//    new RawScannerDataRadarOverlay(science_radar, "", gameGlobalInfo->long_range_radar_range);
+    new RawScannerDataRadarOverlay(science_radar, "", 100000);
+    
     // Draw and hide the probe radar.
     probe_radar = new GuiRadarView(radar_view, "PROBE_RADAR", 5000, &targets);
     probe_radar->setPosition(-270, 0, ACenterRight)->setSize(GuiElement::GuiSizeMax, GuiElement::GuiSizeMax)->hide();
@@ -225,14 +227,18 @@ void ScienceScreen::onDraw(sf::RenderTarget& window)
     if (mouse_wheel_delta != 0.0)
     {
         float view_distance = science_radar->getDistance() * (1.0 - (mouse_wheel_delta * 0.1f));
-        if (view_distance > gameGlobalInfo->long_range_radar_range)
-            view_distance = gameGlobalInfo->long_range_radar_range;
+//        if (view_distance > gameGlobalInfo->long_range_radar_range)
+//            view_distance = gameGlobalInfo->long_range_radar_range;
+        
+        if (view_distance > 100000.0f)
+            view_distance = 100000.0f;
         if (view_distance < 5000.0f)
             view_distance = 5000.0f;
         science_radar->setDistance(view_distance);
         // Keep the zoom slider in sync.
         zoom_slider->setValue(view_distance);
-        zoom_label->setText("Zoom: " + string(gameGlobalInfo->long_range_radar_range / view_distance, 1) + "x");
+//        zoom_label->setText("Zoom: " + string(gameGlobalInfo->long_range_radar_range / view_distance, 1) + "x");
+        zoom_label->setText("Zoom: " + string(100000.0f / view_distance, 1) + "x");
     }
 
     if (!my_spaceship)
